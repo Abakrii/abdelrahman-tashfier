@@ -1,20 +1,50 @@
 import React, { Component } from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, ActivityIndicator } from 'react-native'
 import { Text, View } from 'react-native-animatable'
 
 import CustomButton from '../../components/CustomButton'
 import CustomTextInput from '../../components/CustomTextInput'
 import metrics from '../../config/metrics'
-
-export default class LoginForm extends Component {
+import {connect} from 'react-redux';
+import {authSingIn } from '../../store/actions/index';
+class LoginForm extends Component {
  
   
 
-  state = {
-    email: '',
-    password: '',
-    fullName: ''
-  }
+  // state = {
+  //   email: '',
+  //   password: '',
+  //   fullName: ''
+  // }
+  state={
+   
+    authMode:"login",
+    controls:{
+        email:{
+            value:"",
+
+        },
+        password:{
+            value:"",
+        },
+    }
+};
+
+updateInputState = (key, value) => {
+  this.setState(prevState => {
+      return {
+          controls: {
+              ...prevState.controls,
+              [key]: {
+                  ...prevState.controls[key],
+                  value: value,
+              }
+          }
+      };
+  });
+};
+
+
 
   hideForm = async () => {
     if (this.buttonRef && this.formRef && this.linkRef) {
@@ -25,6 +55,13 @@ export default class LoginForm extends Component {
       ])
     }
   }
+  authHandler = ( ) =>{
+    const  authData ={
+        email:this.state.controls.email.value,
+        password:this.state.controls.password.value
+    };
+    this.props.onTryAuth(authData ,this.state.authMode );
+};
 
   render () {
     const { email, password } = this.state
@@ -43,7 +80,8 @@ export default class LoginForm extends Component {
             blurOnSubmit={false}
             withRef={true}
             onSubmitEditing={() => this.passwordInputRef.focus()}
-            onChangeText={(value) => this.setState({ email: value })}
+           // onChangeText={(value) => this.setState({ email: value })}
+           onChangeText={val=>this.updateInputState("email",val)}
             isEnabled={!isLoading}
           />
           <CustomTextInput
@@ -54,20 +92,27 @@ export default class LoginForm extends Component {
             returnKeyType={'done'}
             secureTextEntry={true}
             withRef={true}
-            onChangeText={(value) => this.setState({ password: value })}
+            //onChangeText={(value) => this.setState({ password: value })}
+            onChangeText={val=>this.updateInputState("password",val)}
+
             isEnabled={!isLoading}
+
           />
         </View>
         <View style={styles.footer}>
           <View ref={(ref) => this.buttonRef = ref} animation={'bounceIn'} duration={600} delay={400}>
-            <CustomButton
-              onPress={() => onLoginPress(email, password)}
-              isEnabled={isValid}
-              isLoading={isLoading}
-              buttonStyle={styles.loginButton}
-              textStyle={styles.loginButtonText}
-              text={'Log In'}
-            />
+         {this.props.isLoading ? <ActivityIndicator size="large" color="#fff"/> :
+          <CustomButton
+          //onPress={() => onLoginPress(email, password)}
+          onPress={this.authHandler}
+
+          isEnabled={isValid}
+          isLoading={isLoading}
+          buttonStyle={styles.loginButton}
+          textStyle={styles.loginButtonText}
+          text={'Log In'}
+        /> }
+            
           </View>
           <Text
             ref={(ref) => this.linkRef = ref}
@@ -109,3 +154,17 @@ const styles = StyleSheet.create({
     padding: 20
   }
 })
+
+const mapStateToProps = state =>{
+  return{
+      isLoading :state.ui.isLoading
+  }  ;
+};
+
+const mapDispatchToProps = dispatch=>{
+  return{
+      onTryAuth:(authData , authMode)=> dispatch(authSingIn(authData, authMode)),
+     // onAutoSignIn:()=> dispatch(authAutoSignIn())
+  };
+};
+export default connect(mapStateToProps ,mapDispatchToProps)(LoginForm);
