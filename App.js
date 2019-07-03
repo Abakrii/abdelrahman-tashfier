@@ -8,7 +8,7 @@
 
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
-
+import SplashScreen from './src/screens/SplashScreen';
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -18,17 +18,45 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
-    );
+  constructor(props) {
+  super(props);
+
+  this.state = { isLoading: true }
+}
+performTimeConsumingTask = async() => {
+  return new Promise((resolve) =>
+    setTimeout(
+      () => { resolve('result') },
+      2000
+    )
+  );
+}
+async componentDidMount() {
+  // Preload data from an external API
+  // Preload data using AsyncStorage
+  const data = await this.performTimeConsumingTask();
+
+  if (data !== null) {
+    this.setState({ isLoading: false });
   }
 }
+  render() {
+  if (this.state.isLoading) {
+    return <SplashScreen />;
+  }
 
+  return (
+    <View style={styles.container}>
+      <Text style={styles.welcome}>
+        Welcome to React Native!
+      </Text>
+      <Text style={styles.instructions}>
+        Reload the App to see a splash screen
+      </Text>
+    </View>
+  );
+}
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
