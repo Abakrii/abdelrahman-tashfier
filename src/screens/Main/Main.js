@@ -11,7 +11,7 @@ import {StyleSheet} from 'react-native';
 //import SplashScreen from './SplashScreen';
 import SplashScreen from "../SplashScreen";
 import AuthScreen from "../AuthScreen";
-
+import AppContainer from "../Navigation/Navigation";
 type Props = {};
  class Main extends Component<Props> {
   constructor(props) {
@@ -41,7 +41,7 @@ async componentDidMount() {
     return <SplashScreen />;
   }
 
-  return  <AuthScreen/>;
+  return  <AppContainer/>;
 }
  }
 

@@ -6,7 +6,10 @@ import CustomButton from '../../components/CustomButton'
 import CustomTextInput from '../../components/CustomTextInput'
 import metrics from '../../config/metrics'
 import {connect} from 'react-redux';
-import {authSingIn } from '../../store/actions/index';
+import {authSingIn} from '../../store/actions/index';
+import { createAppContainer, createStackNavigator, StackActions, NavigationActions } from 'react-navigation'; // Version can be specified in package.json
+
+
 class LoginForm extends Component {
  
   
@@ -18,7 +21,6 @@ class LoginForm extends Component {
   // }
   state={
    
-    authMode:"login",
     controls:{
         email:{
             value:"",
@@ -45,7 +47,18 @@ updateInputState = (key, value) => {
 };
 
 
-
+// onPressFunc =({props}) =>{
+//   console.log("porps" , props);
+//   console.log("this props", this.props);
+ 
+//  this.props.navigation.dispatch(StackActions.reset({
+//        index: 0,
+//        actions: [
+//          NavigationActions.navigate({ routeName: 'Details' })
+//        ],
+//      }))
+  
+// }
   hideForm = async () => {
     if (this.buttonRef && this.formRef && this.linkRef) {
       await Promise.all([
@@ -55,12 +68,20 @@ updateInputState = (key, value) => {
       ])
     }
   }
-  authHandler = ( ) =>{
+  authHandler = ({props} ) =>{
     const  authData ={
         email:this.state.controls.email.value,
         password:this.state.controls.password.value
     };
-    this.props.onTryAuth(authData ,this.state.authMode );
+    this.props.onTryAuth(authData);
+    console.log("props in auth" , this.props)
+    // this.props.navigation.dispatch(StackActions.reset({
+    //   index: 0,
+    //   actions: [
+    //     NavigationActions.navigate({ routeName: 'Details' })
+    //   ],
+    // }))
+   
 };
 
   render () {
@@ -80,7 +101,7 @@ updateInputState = (key, value) => {
             blurOnSubmit={false}
             withRef={true}
             onSubmitEditing={() => this.passwordInputRef.focus()}
-           // onChangeText={(value) => this.setState({ email: value })}
+
            onChangeText={val=>this.updateInputState("email",val)}
             isEnabled={!isLoading}
           />
@@ -92,7 +113,7 @@ updateInputState = (key, value) => {
             returnKeyType={'done'}
             secureTextEntry={true}
             withRef={true}
-            //onChangeText={(value) => this.setState({ password: value })}
+          
             onChangeText={val=>this.updateInputState("password",val)}
 
             isEnabled={!isLoading}
@@ -103,7 +124,6 @@ updateInputState = (key, value) => {
           <View ref={(ref) => this.buttonRef = ref} animation={'bounceIn'} duration={600} delay={400}>
          {this.props.isLoading ? <ActivityIndicator size="large" color="#fff"/> :
           <CustomButton
-          //onPress={() => onLoginPress(email, password)}
           onPress={this.authHandler}
 
           isEnabled={isValid}
@@ -157,14 +177,16 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state =>{
   return{
-      isLoading :state.ui.isLoading
+      isLoading :state.ui.isLoading,
+      auth: state.auth
+
   }  ;
 };
 
-const mapDispatchToProps = dispatch=>{
+const mapDispatchToProps = dispatch => {
   return{
-      onTryAuth:(authData , authMode)=> dispatch(authSingIn(authData, authMode)),
-     // onAutoSignIn:()=> dispatch(authAutoSignIn())
+      onTryAuth:(authData)=> dispatch(authSingIn(authData)),
+
   };
 };
 export default connect(mapStateToProps ,mapDispatchToProps)(LoginForm);

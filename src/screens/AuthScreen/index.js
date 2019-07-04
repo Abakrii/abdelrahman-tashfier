@@ -84,9 +84,7 @@ export default class AuthScreen extends Component {
           {(visibleForm === 'LOGIN') && (
             <LoginForm
               ref={(ref) => this.formRef = ref}
-              onSignupLinkPress={() => this._setVisibleForm('SIGNUP')}
-              onLoginPress={login}
-              isLoading={isLoading}
+              navigation={this.props.navigation}
             />
           )}
         </KeyboardAvoidingView>
