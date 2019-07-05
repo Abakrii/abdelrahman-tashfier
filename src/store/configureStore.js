@@ -7,12 +7,16 @@ import  thunk from 'redux-thunk';
 import  uiReducer from "./reducers/spinner";
 
 import authReducer from "./reducers/auth";
+import categoryReducer from "./reducers/Categories";
+import markersReducer from "./reducers/Markers";
 
 
 const rootReducer = combineReducers({
    
     ui:uiReducer,
     auth: authReducer,
+    Markers:markersReducer,
+    Categories:categoryReducer
 });
 
 let composeEnhancers = compose;
