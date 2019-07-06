@@ -14,8 +14,8 @@ export const authSingIn = authData => {
     fetch(url, {
       method: "POST",
       body: JSON.stringify({
-        email: "test@test.com",
-        password: "123456",
+        email: authData.email,
+        password: authData.password,
         returnSecureToken: true
       }),
       headers: {
